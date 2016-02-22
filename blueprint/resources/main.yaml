@@ -6,11 +6,11 @@
 
   tasks:
     - name: Define "sys_update" var.
-      shell: 'echo "PLACE1"'
+      shell: 'Ansible veriable sys_update'
       register: sys_update
 
     - name: Define "deploy" var.
-      shell: 'echo "PLACE2"'
+      shell: 'Ansible veriable deploy'
       register: deploy_code
 
     - name: Run apt-get update.
@@ -20,7 +20,7 @@
 
     - name: Install dependencies packages.
       sudo: yes
-      apt: name=PLACE3 state=present
+      apt: name=Ansible-items state=present
       with_items:
          - build-essential
          - libssl-dev
@@ -73,7 +73,7 @@
 
     - name: Install pip package.
       sudo: yes
-      pip: name=PLACE3
+      pip: name=Ansible-items
       with_items:
          - cloudify
          - butterfly==2.0.0
@@ -91,7 +91,7 @@
       when: deploy_code.stdout == "True"
 
     - name: Kill the butterfly process.
-      shell: kill -9 PLACE4
+      shell: kill -9 butterfly_pid_stdout
       when: deploy_code.stdout == "True"
 
     - name: Starting butterfly.
@@ -100,4 +100,4 @@
         CONTENT_HOME: /home/ubuntu/simple-python-webserver-blueprint
         WALKTHROUGH_ROOT: /home/ubuntu/simple-python-webserver-blueprint
         NODE_VERSION: 4.2.1
-        EXTERNAL_IP: "PLACE5"
+        EXTERNAL_IP: "Ansible_host_external_ip"

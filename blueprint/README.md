@@ -1,8 +1,8 @@
-# cfy-local-nodejs-mongodb
+# cloudify-interactive-tutorial
 
 ## Summary
 
-Deploys any NodeJS/Mongo Application using cfy local on AWS and Openstack.
+Deploys Cloudify Interactive tutorial Application using cfy local on AWS.
 
 A bit more detailed explanation:
 
@@ -73,11 +73,7 @@ Then go to http://YourIPAddress:8080.
 
 ### Set up an IaaS (e.g. AWS OR Openstack) environment:
 
-First create work directories
 
-```bash
-mkdir infrastructure
-mkdir application
 ```
 
 Now, make a copy of the appropriate infrastructure inputs:
@@ -101,51 +97,14 @@ Now, execute the install workflow for the infrastructure:
 For AWS:
 
 ```bash
-(cd infrastructure && cfy local init --install-plugins -p ../aws-ec2-blueprint.yaml -i inputs.yaml && cfy local execute -w install --task-retries=9 --task-retry-interval=10 && cfy local outputs)
-```
-OR, for Openstack:
-
-```bash
-(cd infrastructure && cfy local init --install-plugins -p ../openstack.yaml -i inputs.yaml && cfy local execute -w install --task-retries=9 --task-retry-interval=10 && cfy local outputs)
-```
-
-When the command is finished you'll see the outputs from that blueprint. You'll notice that they correspond to the inputs on the applcation blueprint:
-
-```
-{
-  "application": {
-    "application_server_port": ...,
-    "nodejs_host_ip": "...",
-    "nodejs_host_public_key_path": "..."
-  },
-  "database": {
-    "mongo_host_ip": "...",
-    "mongo_host_public_key_path": "...",
-    "mongo_port": ...
-  }
-}
-```
-
-Create the inputs file:
-```bash
-cp inputs/application-inputs.yaml application/inputs.yaml
+(cfy local init --install-plugins -p tutorial-blueprint.yaml -i inputs/inputs.yaml && cfy local execute -w install --task-retries=9 --task-retry-interval=10)
 ```
 
 Now take the values from the outputs of the last command, and replace them in application/inputs.yaml. By default, you should only need to replace the nodejs_host_ip and mongo_host_ip values.
 
-Then run:
-```bash
-(cd application && cfy local init --install-plugins -p ../application-blueprint.yaml -i inputs.yaml  && cfy local execute -w install --task-retries=9 --task-retry-interval=10 && cfy local outputs)
-```
-
-To see the application, you can go to http://[THE APPLICATION URL]:8080/.
+To see the application, you can go to http://[THE APPLICATION URL]:8088/.
 
 To uninstall the application run:
 ```bash
-(cd application && cfy local execute -w uninstall --task-retries=9 --task-retry-interval=10)
-```
-
-To uninstall the infrastructure:
-```bash
-(cd infrastructure && cfy local execute -w uninstall --task-retries=9 --task-retry-interval=10)
+cfy local execute -w uninstall --task-retries=9 --task-retry-interval=10
 ```

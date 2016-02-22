@@ -1,12 +1,9 @@
 tosca_definitions_version: cloudify_dsl_1_2
 
 description: >
-  This blueprint uses the cloudify fabric (SSH) plugin to install a
-  mongo database, node, and a nodejs application. It is called simple,
-  because it sets up no other infrastructure needed to support the
-  application. You need to provide the IP, SSH key, and username of
-  the machine where you want to install Mongo, and Node/Node
-  application. It's fine for them all to be on the same machine.
+  This blueprint uses the cloudify Ansible (SSH) plugin to install a
+  Cloudify intro Tutorial application. It uses AWS as the infrastructre
+  and Uses Ansible to update and deploy the application code
 
 imports:
   - http://www.getcloudify.org/spec/cloudify/3.3/types.yaml
@@ -47,6 +44,10 @@ inputs:
   ssh_key_filename:
     type: string
     default: ~/.ssh/cfy_local_keypair.pem
+
+  application_host_user_agent:
+    type: string
+    default: ubuntu
 
   use_existing_server_for_application:
     type: boolean

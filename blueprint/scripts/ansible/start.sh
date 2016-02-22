@@ -20,12 +20,13 @@ fi
 set +e
 
 
-# there is a way in bash to get the tmp directory via command. use it instead.
-TEMP_DIR='tmp'
+TEMP_DIR=`mktemp -d`
+ctx logger info "temp directory ${TEMP_DIR}"
 ANSIBLE_DIRECTORY=${TEMP_DIR}/$(ctx execution-id)/ansible
 # replace FILENAME with 'PLAYBOOK_FILENAME'
-FILENAME=main.yaml
-PLAYBOOK_PATH=${ANSIBLE_DIRECTORY}/${FILENAME}
+PLAYBOOK_FILENAME=$(ctx instance properties playbook_file_name)
+PLAYBOOK_PATH=${ANSIBLE_DIRECTORY}/${PLAYBOOK_FILENAME}
+ctx logger info "playbook name: ${PLAYBOOK_FILENAME}"
 
 mkdir -p ${ANSIBLE_DIRECTORY}/roles
 
@@ -34,7 +35,6 @@ TEMP_CONF_PATH=$(ctx download-resource-and-render resources/ansible.cfg)
 TEMP_VAR_PATH=$(ctx download-resource-and-render resources/default.yml)
 
 ctx logger info "Downloaded ansible.cfg to ${TEMP_CONF_PATH}"
-ctx logger info "Playbook: ${FILENAME}"
 CONF_PATH=$ANSIBLE_DIRECTORY/ansible.cfg
 VAR_PATH=$ANSIBLE_DIRECTORY/default.yml
 INVENTORY_PATH=$ANSIBLE_DIRECTORY/inventory
@@ -51,17 +51,16 @@ cp $INVENTORY_FILE $INVENTORY_PATH
 rpx repl -p $INVENTORY_PATH -r HOST -w $application_host_public_ip
 
 # Download the playbook that will download the roles for the other modules
-PLAYBOOK=$(ctx download-resource-and-render resources/main.yaml)
+PLAYBOOK=$(ctx download-resource-and-render resources/${PLAYBOOK_FILENAME})
 cp $PLAYBOOK $PLAYBOOK_PATH
 ctx logger info "Downloaded resource to ${PLAYBOOK_PATH}"
 
 # Manipulate playbook to prepare for Ansible run
-rpx repl -p $PLAYBOOK_PATH -r PLACE0 -w "{{ ansible_ssh_host }}"
-rpx repl -p $PLAYBOOK_PATH -r 'echo "PLACE1"' -w 'echo "{{ sys_update }}"'
-rpx repl -p $PLAYBOOK_PATH -r 'echo "PLACE2"' -w 'echo "{{ deploy }}"'
-rpx repl -p $PLAYBOOK_PATH -r PLACE3 -w "{{ item }}"
-rpx repl -p $PLAYBOOK_PATH -r PLACE4 -w {{butterfly_PID.stdout}}
-rpx repl -p $PLAYBOOK_PATH -r PLACE5 -w {{ext_ip.stdout}}
+rpx repl -p $PLAYBOOK_PATH -r 'Ansible veriable sys_update' -w 'echo "{{ sys_update }}"'
+rpx repl -p $PLAYBOOK_PATH -r 'Ansible veriable deploy' -w 'echo "{{ deploy }}"'
+rpx repl -p $PLAYBOOK_PATH -r Ansible-items -w "{{ item }}"
+rpx repl -p $PLAYBOOK_PATH -r butterfly_pid_stdout -w {{butterfly_PID.stdout}}
+rpx repl -p $PLAYBOOK_PATH -r Ansible_host_external_ip -w {{ext_ip.stdout}}
 
 # Run playbook after manipulation
 sleep 1m

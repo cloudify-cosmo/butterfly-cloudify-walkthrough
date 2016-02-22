@@ -6,6 +6,7 @@ aws_access_key_id:
 aws_secret_access_key:
 
 ## You also need to provide this. There's a good chance that us-east-1 will work for you, so I provided a default.
+## This places the server in Ireland region of AWS (If you change this be sure the AMI is avalible in the new region)
 ec2_region_name: eu-west-1
 ## Especially because I know the AMIs below work in us-east-1.
 application_server_image_id: ami-b265c7c1
@@ -21,29 +22,15 @@ application_server_instance_type: m3.medium
 # keypair_name: cfy_local_keypair
 # ssh_key_filename: ~/.ssh/cfy_local_keypair.pem
 # use_existing_server_for_database: false
-# database_server_id: ''
 # use_existing_server_for_application: false
 # application_server_id: ''
 # use_existing_ip_for_database: false
-# database_server_ip: ''
 # use_existing_ip_for_application: false
 # application_server_ip: ''
 
 ## If you will change these in the application-blueprint.yaml, and in the tasks.py, then you should change these.
 ## Most likely, not going to be the first thing you consider changing.
-# application_port: 8080.
-
-# If you are using AWS or Openstack, you'll want to replace these with the outputs of the `cfy local outputs` command.
-## This is the last output after running the infrastructure install workflow.
-# tutorial_host_ip: 52.49.184.147
-# tutorial_host_public_key_path: ~/.ssh/cfy_local_keypair.pem
+# application_port: 8088
 
 ## This really depends on your local linux system or on your Openstack image or AWS AMI:
-# nodejs_host_user_agent: centos
-
-## You may have changed these in your inputs to Openstack/AWS blueprint.
-# application_server_port: 8088
-
-## If you want to use something other than nodecellar, that's an option here.
-# application_tarball_url: https://github.com/cloudify-cosmo/nodecellar/archive/master.tar.gz
-# application_start_up_script: server.js
+# application_host_user_agent: ubuntu
