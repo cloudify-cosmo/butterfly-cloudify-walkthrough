@@ -6,13 +6,13 @@ description: >
   and Uses Ansible to update and deploy the application code
 
 imports:
-  - http://www.getcloudify.org/spec/cloudify/3.3/types.yaml
-  - http://www.getcloudify.org/spec/aws-plugin/1.3/plugin.yaml
-  - types/node.yaml
+  - http://www.getcloudify.org/spec/cloudify/3.3.1/types.yaml
+  - http://www.getcloudify.org/spec/aws-plugin/1.4/plugin.yaml
+  - types/interactive-tutorial.yaml
 
 inputs:
 
-  application_port:
+  tutorial_application_port:
     type: string
     default: 8088
 
@@ -25,11 +25,11 @@ inputs:
   ec2_region_name:
     type: string
 
-  use_existing_security_group_for_application:
+  use_existing_security_group_for_tutorial_application:
     type: boolean
     default: false
 
-  application_security_group_id:
+  tutorial_application_security_group_id:
     type: string
     default: ''
 
@@ -45,29 +45,25 @@ inputs:
     type: string
     default: ~/.ssh/cfy_local_keypair.pem
 
-  application_host_user_agent:
-    type: string
-    default: ubuntu
-
-  use_existing_server_for_application:
+  use_existing_server_for_tutorial_application:
     type: boolean
     default: false
 
-  application_server_id:
+  tutorial_application_server_id:
     type: string
     default: ''
 
-  application_server_image_id:
+  tutorial_application_server_image_id:
     type: string
 
-  application_server_instance_type:
+  tutorial_application_server_instance_type:
     type: string
 
-  use_existing_ip_for_application:
+  use_existing_ip_for_tutorial_application:
     type: boolean
     default: false
 
-  application_server_ip:
+  tutorial_application_server_ip:
     type: string
     default: ''
 
@@ -79,28 +75,28 @@ dsl_definitions:
 
 node_templates:
 
-  application_server_ip:
+  tutorial_application_server_ip:
     type: cloudify.aws.nodes.ElasticIP
     properties:
       aws_config: *AWS_CONFIG
-      use_external_resource: { get_input: use_existing_ip_for_application }
-      resource_id: { get_input: application_server_ip }
+      use_external_resource: { get_input: use_existing_ip_for_tutorial_application }
+      resource_id: { get_input: tutorial_application_server_ip }
 
-  application_host:
+  tutorial_application_host:
     type: cloudify.aws.nodes.Instance
     properties:
       aws_config: *AWS_CONFIG
-      use_external_resource: { get_input: use_existing_server_for_application }
-      resource_id: { get_input: application_server_id }
+      use_external_resource: { get_input: use_existing_server_for_tutorial_application }
+      resource_id: { get_input: tutorial_application_server_id }
       install_agent: false
-      image_id: { get_input: application_server_image_id }
-      instance_type: { get_input: application_server_instance_type }
+      image_id: { get_input: tutorial_application_server_image_id }
+      instance_type: { get_input: tutorial_application_server_instance_type }
     relationships:
       - target: keypair
         type: cloudify.aws.relationships.instance_connected_to_keypair
-      - target: application_server_ip
+      - target: tutorial_application_server_ip
         type: cloudify.aws.relationships.instance_connected_to_elastic_ip
-      - target: application_security_group
+      - target: tutorial_application_security_group
         type: cloudify.aws.relationships.instance_connected_to_security_group
 
   keypair:
@@ -111,21 +107,21 @@ node_templates:
       resource_id: { get_input: keypair_name }
       private_key_path: { get_input: ssh_key_filename }
 
-  application_security_group:
+  tutorial_application_security_group:
     type: cloudify.aws.nodes.SecurityGroup
     properties:
       aws_config: *AWS_CONFIG
-      use_external_resource: { get_input: use_existing_security_group_for_application }
-      resource_id: { get_input: application_security_group_id }
-      description: Security group for Nodejs-Application VMs
+      use_external_resource: { get_input: use_existing_security_group_for_tutorial_application }
+      resource_id: { get_input: tutorial_application_security_group_id }
+      description: Security group for tutorial_application VMs
       rules:
         - ip_protocol: tcp
           from_port: 22
           to_port: 22
           cidr_ip: 0.0.0.0/0
         - ip_protocol: tcp
-          from_port: { get_input: application_port }
-          to_port: { get_input: application_port }
+          from_port: { get_input: tutorial_application_port }
+          to_port: { get_input: tutorial_application_port }
           cidr_ip: 0.0.0.0/0
         - ip_protocol: tcp
           from_port: 32000
@@ -133,7 +129,7 @@ node_templates:
           cidr_ip: 0.0.0.0/0
 
   tutorial_application:
-    type: cloudify.nodes.NodeApplication
+    type: tutorial.nodes.Intro
     relationships:
       - type: cloudify.relationships.contained_in
-        target: application_host
+        target: tutorial_application_host

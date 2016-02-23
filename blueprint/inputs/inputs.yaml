@@ -2,35 +2,27 @@
 ## However, there are some that have no defaults and you will need to fill them out with your own values, i.e. your credentials.
 
 ## You need to provide these. There's no way I can know the default values.
-aws_access_key_id: AKIAJZB3Z23IIPP6EMOA
-aws_secret_access_key: 'kN9GG7BqZhmAe+Z2/fy0TDtXNRrbpGZEIrDkc9JG'
+aws_access_key_id:
+aws_secret_access_key: 
 
 ## You also need to provide this. There's a good chance that us-east-1 will work for you, so I provided a default.
-## This places the server in Ireland region of AWS (If you change this be sure the AMI is avalible in the new region)
+## This places the server in Ireland region of AWS (If you change this, Confirm that the AMI is avalible in the new region)
 ec2_region_name: eu-west-1
-## Especially because I know the AMIs below work in us-east-1.
-application_server_image_id: ami-b265c7c1
-application_server_instance_type: m3.medium
+## Especially because I know the AMIs below work in eu-west-1.
+tutorial_application_server_image_id: ami-b265c7c1
+tutorial_application_server_instance_type: m3.medium
 
 ## The following values have default values, but if you want to use an existing Instance,
 ## Security Group or IP or Keypair, I've exposed them as inputs for you.
-# use_existing_security_group_for_database: false
-# database_security_group_id: ''
-# use_existing_security_group_for_application: false
-# application_security_group_id: ''
+# use_existing_security_group_for_tutorial_application: false
+# tutorial_application_security_group_id: ''
 # use_existing_keypair: false
 # keypair_name: cfy_local_keypair
 # ssh_key_filename: ~/.ssh/cfy_local_keypair.pem
-# use_existing_server_for_database: false
-# use_existing_server_for_application: false
-# application_server_id: ''
-# use_existing_ip_for_database: false
-# use_existing_ip_for_application: false
-# application_server_ip: ''
+# use_existing_server_for_tutorial_application: false
+# tutorial_application_server_id: ''
+# use_existing_ip_for_tutorial_application: false
+# tutorial_application_server_ip: ''
 
-## If you will change these in the application-blueprint.yaml, and in the tasks.py, then you should change these.
-## Most likely, not going to be the first thing you consider changing.
-# application_port: 8088
-
-## This really depends on your local linux system or on your Openstack image or AWS AMI:
-# application_host_user_agent: ubuntu
+## If you will change these in the tutorial-blueprint.yaml, and in the start.sh, then you should change these.
+# tutorial_application_port: 8088

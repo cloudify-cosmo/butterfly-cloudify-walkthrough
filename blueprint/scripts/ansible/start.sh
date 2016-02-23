@@ -20,11 +20,11 @@ fi
 set +e
 
 
-TEMP_DIR=`mktemp -d`
+TEMP_DIR='tmp'
 ANSIBLE_DIRECTORY=${TEMP_DIR}/$(ctx execution-id)/ansible
 PLAYBOOK_FILENAME=main.yaml
+# This is currently hardcoded but should be a property in the blueprint
 PLAYBOOK_PATH=${ANSIBLE_DIRECTORY}/${PLAYBOOK_FILENAME}
-ctx logger info "tmp folder here: ${ANSIBLE_DIRECTORY}"
 
 mkdir -p ${ANSIBLE_DIRECTORY}/roles
 
@@ -43,12 +43,11 @@ ctx instance runtime-properties confpath ${CONF_PATH}
 # Add the ansible hostname name to the inventory and to etc hosts
 INVENTORY_FILE=$(ctx download-resource-and-render resources/inventory)
 cp $INVENTORY_FILE $INVENTORY_PATH
-rpx repl -p $INVENTORY_PATH -r HOST -w $application_host_public_ip
+rpx repl -p $INVENTORY_PATH -r HOST -w $tutorial_application_host_public_ip
 
 # Download the playbook that will download the roles for the other modules
 PLAYBOOK=$(ctx download-resource-and-render resources/${PLAYBOOK_FILENAME})
 cp $PLAYBOOK $PLAYBOOK_PATH
-ctx logger info "Downloaded resource to ${PLAYBOOK_PATH}"
 
 # Manipulate playbook to prepare for Ansible run
 rpx repl -p $PLAYBOOK_PATH -r 'Ansible veriable sys_update' -w 'echo "{{ sys_update }}"'
@@ -58,5 +57,6 @@ rpx repl -p $PLAYBOOK_PATH -r butterfly_pid_stdout -w {{butterfly_PID.stdout}}
 rpx repl -p $PLAYBOOK_PATH -r Ansible_host_external_ip -w {{ext_ip.stdout}}
 
 # Run playbook after manipulation
+ctx logger info "Ansible Playbook is now running"
 ansible-playbook ${PLAYBOOK_PATH} > ${ANSIBLE_DIRECTORY}/output.log 2>&1
 ctx logger info "Executed ${PLAYBOOK_PATH}"
